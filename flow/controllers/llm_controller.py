@@ -42,7 +42,7 @@ def measure_time(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         execution_time = end_time - start_time
-        print(f"Execution time: {execution_time} seconds")
+        # print(f"Execution time: {execution_time} seconds")
         return result
     return wrapper
 
@@ -67,12 +67,21 @@ class DriverAgent():
 
     def make_decision(self, scenario_description, env):
         system_prompt = textwrap.dedent("""
-        You are an autonomous driver. Please give a suitable acceleration based on the scenario description and shared message below.
+        You are now act as a mature driving assistant, who can give accurate and correct advice for human driver in complex urban driving scenarios.
+        Please give a suitable advice based on the scenario description and shared message below.
+        ######
+        Your available actions:
+        Maintain - remain in the current lane with current acceleration - Action_id: 0
+        Speed up - Increase acceleration of the vehicle - Action_id: 1
+        Slow down - Reduce acceleration of the vehicle - Action_id: 2
+        ######
         Please output an action id and a message you want to tell other vehicles. Let's think step by step. You can give your reasoning progress.
         Output Format: only give a dictionary as below.
         {'action': 0, 'message': 'I suggest veh 0,1 slow down. Others please maintain the current speed.'}
         """)
+
         shared_message = env.message_pool.get_msg()
+
         human_message = textwrap.dedent(f"""
         {system_prompt}\n
         {delimiter} scenario_description:\n{scenario_description}\n
@@ -93,7 +102,7 @@ class DriverAgent():
         try:
             response = eval(response)
         except:
-            print("Output Format Error: ", response)
+            # print("Output Format Error: ", response)
             response = {'action': 0, 'message': ' '}
         
         action_id = response['action']
@@ -101,10 +110,10 @@ class DriverAgent():
         env.message_pool.join(message, self.veh_id)
 
         # Loging
-        log_scenario_description(scenario_description)
-        log_agent_reasoning(self.veh_id, human_message, action_id, message)
-        print(f"\n\n------------{self.veh_id}--------------\n\n")
-        print(human_message)
+        #log_scenario_description(scenario_description)
+        #log_agent_reasoning(self.veh_id, human_message, action_id, message)
+        # print(f"\n\n------------{self.veh_id}--------------\n\n")
+        # print(human_message)
         print(f"\n{delimiter}\naction_id: {action_id}\nmessage:{message}")
 
         return action_id
@@ -146,34 +155,51 @@ class LLMController(BaseController):
 
         scenario_description = textwrap.dedent(f"""\
         You are driving on a road like figure eight. There is only a single lane in one direction with an intersection.
-        Your target is to decide your acceleration to help all vehicles pass the intersection quickly and smoothly.
-        Your speed is {env.k.vehicle.get_speed(self.veh_id)} m/s, IDM acceleration is {IDM_acc} m/s^2, and lane position is {env.k.vehicle.get_position(self.veh_id)} m. 
+        Your target is to give an advice for human driver to help all vehicles pass the intersection quickly and smoothly.
+        Your speed is {round(env.k.vehicle.get_speed(self.veh_id), 2)} m/s, IDM acceleration is {round(IDM_acc, 2)} m/s^2, and lane position is {round(env.k.vehicle.get_position(self.veh_id), 2)} m. 
         There are other vehicles driving around you, and below is their basic information:
         """)
         for i in range(len(speed)):
-            scenario_description += f" - Vehicle {i} is driving on the same lane as you. The speed of it is {speed[i]} m/s, and lane position is {pos[i]} m.\n"
+            scenario_description += f" - Vehicle {i} is driving on the same lane as you. The speed of it is {round(speed[i], 2)} m/s, and lane position is {round(pos[i], 2)} m.\n"
         
-        action_space = textwrap.dedent(f"""
-        {delimiter} IDM gives acceleration {IDM_acc} m/s^2. Your available actions:
-        IDLE - remain in the current lane with current speed Action_id: 0
-        Acceleration - accelerate the vehicle Action_id: 1
-        Deceleration - decelerate the vehicle Action_id: 2
+        strategy_instruction = textwrap.dedent(f"""
+        {delimiter} Here I'll tell you a strategy to make decision. PLEASE TRY TO MAKE USE OF IT.
+        In figure eight scenario, most of the vehicles gather on the intersections to cause traffic jams. But there are few cars in the other area.
+        We should try to balance the distribution of vehicles.
+        - If there are many cars near the intersection and you're far away from it, slow down.
+        - If there are few cars near the intersection and you're far away from it, speed up.
+        Specifically, you can monitor the density of vehicles near the intersection, whose position locates between 0 to 0.15, or whose postion locates between 0.5 and 0.65.
+        So you can count the number of vehicles above
+        - If there are more than 5 vehicles near the intersection, you should slow down or take action 2.
+        - If there are less than 2 vehicles near the intersection, you should speed up or take action 1.
+        - Otherwise, you can maintain the speed or take action 0.
         """)
-        scenario_description += action_space
 
+        action_query = textwrap.dedent(f"""
+        {delimiter} Now the ego vehicle gives acceleration {round(IDM_acc, 2)} m/s^2.
+        Now please give your advice among 3 actions, you MUST use the format as above to output a python dictionary.
+        {delimiter}
+        The driving task usually invovles many steps. You can break this task down into subtasks and complete them one by one. 
+        There is no rush to give a final answer unless you are confident that the answer is correct.
+        Make the decision as best you can. Begin! """)
+        scenario_description += strategy_instruction + action_query
+
+        # action = 2
+        # print(env.k.vehicle.get_x_by_id("llm_0") / env.k.network.length())
         action = self.DA.make_decision(scenario_description, env)
 
         # Log communication and decision process
-        log_communication(self.veh_id, action)
+        #log_communication(self.veh_id, action)
         log_decision_theory(self.veh_id, scenario_description)
 
         if action == 1:
-            IDM_acc += abs(IDM_acc) * 0.3
+            IDM_acc += abs(IDM_acc) * 0.5
         elif action == 2:
-            IDM_acc -= abs(IDM_acc) * 0.3
+            IDM_acc -= abs(IDM_acc) * 0.5
 
         return IDM_acc
 
+"""
 # Integrate reward calculation and speed measurement
 def run_simulation(env, llm_controller):
     total_reward = 0
@@ -189,3 +215,4 @@ def run_simulation(env, llm_controller):
     average_speed = total_speed / (num_vehicles * env.sim_params.simulation_step)
     print(f"Total Reward: {total_reward}")
     print(f"Average Speed: {average_speed} m/s")
+"""

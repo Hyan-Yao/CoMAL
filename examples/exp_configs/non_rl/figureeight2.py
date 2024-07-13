@@ -1,10 +1,10 @@
-"""Benchmark for figureeight0.
+"""Benchmark for figureeight2.
 
 Trains a fraction of vehicles in a ring road structure to regulate the flow of
-vehicles through an intersection. In this example, the last vehicle in the
+vehicles through an intersection. In this example, every vehicle in the
 network is an autonomous vehicle.
 
-- **Action Dimension**: (1, )
+- **Action Dimension**: (14, )
 - **Observation Dimension**: (28, )
 - **Horizon**: 1500 steps
 """
@@ -14,26 +14,15 @@ from copy import deepcopy
 from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams, \
     SumoCarFollowingParams
 from flow.core.params import VehicleParams
-from flow.controllers import IDMController, ContinuousRouter, RLController
+from flow.controllers import ContinuousRouter, RLController
 from flow.controllers import LLMController
 from flow.networks.figure_eight import ADDITIONAL_NET_PARAMS
 
 # time horizon of a single rollout
 HORIZON = 1500
 
-# We place 1 autonomous vehicle and 13 human-driven vehicles in the network
+# We place 16 autonomous vehicle and 0 human-driven vehicles in the network
 vehicles = VehicleParams()
-vehicles.add(
-    veh_id="human",
-    acceleration_controller=(IDMController, {
-        "noise": 0.2
-    }),
-    routing_controller=(ContinuousRouter, {}),
-    car_following_params=SumoCarFollowingParams(
-        speed_mode="obey_safe_speed",
-        decel=1.5,
-    ),
-    num_vehicles=13)
 vehicles.add(
     veh_id="llm",
     acceleration_controller=(LLMController, {}),
@@ -41,12 +30,11 @@ vehicles.add(
     car_following_params=SumoCarFollowingParams(
         speed_mode="obey_safe_speed",
     ),
-    num_vehicles=1,
-    color="yellow")
+    num_vehicles=14)
 
 flow_params = dict(
     # name of the experiment
-    exp_tag="figure_eight_0",
+    exp_tag="figure_eight_2",
 
     # name of the flow environment the experiment is running on
     env_name=AccelEnv,
