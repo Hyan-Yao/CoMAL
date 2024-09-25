@@ -122,6 +122,7 @@ class Experiment:
             "returns": [],
             "velocities": [],
             "outflows": [],
+            "wave/std": [],
         }
         info_dict.update({
             key: [] for key in self.custom_callables.keys()
@@ -162,6 +163,7 @@ class Experiment:
             outflow = self.env.k.vehicle.get_outflow_rate(int(500))
             info_dict["returns"].append(ret)
             info_dict["velocities"].append(np.mean(vel))
+            info_dict['wave/std'].append(np.std(vel)) # measure shockwaves by std
             info_dict["outflows"].append(outflow)
             for key in custom_vals.keys():
                 info_dict[key].append(np.mean(custom_vals[key]))

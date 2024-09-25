@@ -20,6 +20,10 @@ from traci.exceptions import FatalTraCIError
 from traci.exceptions import TraCIException
 
 import sumolib
+import multiprocessing as mp
+from pathos.pools import _ThreadPool as Pool
+
+from flow.utils.agents_network import message_pool
 
 
 from flow.core.util import ensure_dir
@@ -27,6 +31,11 @@ from flow.core.kernel import Kernel
 from flow.utils.exceptions import FatalFlowError
 
 
+def get_vehicle_action(args):
+    veh_id, k, _self = args
+    controller = k.vehicle.get_acc_controller(veh_id)
+    action = controller.get_action(_self)
+    return action
 class Env(gym.Env, metaclass=ABCMeta):
     """Base environment class.
 
@@ -229,6 +238,8 @@ class Env(gym.Env, metaclass=ABCMeta):
                 'Mode %s is not supported!' % self.sim_params.render)
         atexit.register(self.terminate)
 
+        self.message_pool = message_pool()
+
     def restart_simulation(self, sim_params, render=None):
         """Restart an already initialized simulation instance.
 
@@ -292,6 +303,13 @@ class Env(gym.Env, metaclass=ABCMeta):
 
             self.initial_state[veh_id] = (type_id, edge, lane, pos, speed)
 
+
+
+    def get_all_vehicle_actions(self):
+        veh_ids = self.k.vehicle.get_controlled_ids()
+        with Pool(mp.cpu_count()) as pool:
+            accel = pool.map(get_vehicle_action, [(veh_id, self.k, self) for veh_id in veh_ids])
+        return accel
     def step(self, rl_actions):
         """Advance the environment by one step.
 
@@ -330,9 +348,11 @@ class Env(gym.Env, metaclass=ABCMeta):
             if len(self.k.vehicle.get_controlled_ids()) > 0:
                 accel = []
                 for veh_id in self.k.vehicle.get_controlled_ids():
-                    action = self.k.vehicle.get_acc_controller(
-                        veh_id).get_action(self)
+                    controller = self.k.vehicle.get_acc_controller(veh_id)
+                    action = controller.get_action(self)
                     accel.append(action)
+
+                # accel = self.get_all_vehicle_actions()
                 self.k.vehicle.apply_acceleration(
                     self.k.vehicle.get_controlled_ids(), accel)
 

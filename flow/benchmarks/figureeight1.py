@@ -41,7 +41,8 @@ for i in range(7):
         car_following_params=SumoCarFollowingParams(
             speed_mode="obey_safe_speed",
         ),
-        num_vehicles=1)
+        num_vehicles=1,
+        color="yellow")
 
 flow_params = dict(
     # name of the experiment

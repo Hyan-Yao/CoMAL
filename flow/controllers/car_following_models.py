@@ -484,7 +484,7 @@ class IDMController(BaseController):
         v = env.k.vehicle.get_speed(self.veh_id)
         lead_id = env.k.vehicle.get_leader(self.veh_id)
         h = env.k.vehicle.get_headway(self.veh_id)
-
+        
         # in order to deal with ZeroDivisionError
         if abs(h) < 1e-3:
             h = 1e-3

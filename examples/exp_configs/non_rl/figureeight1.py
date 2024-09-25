@@ -15,7 +15,7 @@ from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams, \
     SumoCarFollowingParams
 from flow.core.params import VehicleParams
 from flow.controllers import IDMController, ContinuousRouter, RLController
-from flow.controllers import LLMController
+from flow.controllers import LLMController, Flow_API, CustomController
 from flow.networks.figure_eight import ADDITIONAL_NET_PARAMS
 
 # time horizon of a single rollout
@@ -41,8 +41,10 @@ for i in range(7):
         routing_controller=(ContinuousRouter, {}),
         car_following_params=SumoCarFollowingParams(
             speed_mode="obey_safe_speed",
+            decel=1.5,
         ),
-        num_vehicles=1)
+        num_vehicles=1,
+        color="orange")
 
 flow_params = dict(
     # name of the experiment

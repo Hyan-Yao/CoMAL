@@ -81,8 +81,6 @@ class AccelEnv(Env):
 
         super().__init__(env_params, sim_params, network, simulator)
 
-        self.message_pool = message_pool()
-
     @property
     def action_space(self):
         """See class definition."""

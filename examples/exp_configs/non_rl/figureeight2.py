@@ -14,8 +14,8 @@ from copy import deepcopy
 from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams, \
     SumoCarFollowingParams
 from flow.core.params import VehicleParams
-from flow.controllers import ContinuousRouter, RLController
-from flow.controllers import LLMController
+from flow.controllers import IDMController, ContinuousRouter, RLController
+from flow.controllers import LLMController, Flow_API, CustomController
 from flow.networks.figure_eight import ADDITIONAL_NET_PARAMS
 
 # time horizon of a single rollout
@@ -23,14 +23,17 @@ HORIZON = 1500
 
 # We place 16 autonomous vehicle and 0 human-driven vehicles in the network
 vehicles = VehicleParams()
-vehicles.add(
-    veh_id="llm",
-    acceleration_controller=(LLMController, {}),
-    routing_controller=(ContinuousRouter, {}),
-    car_following_params=SumoCarFollowingParams(
-        speed_mode="obey_safe_speed",
-    ),
-    num_vehicles=14)
+for i in range(14):
+    vehicles.add(
+        veh_id="llm{}".format(i),
+        acceleration_controller=(LLMController, {}),
+        routing_controller=(ContinuousRouter, {}),
+        car_following_params=SumoCarFollowingParams(
+            speed_mode="obey_safe_speed",
+            decel=1.5,
+        ),
+        num_vehicles=1,
+        color="orange")
 
 flow_params = dict(
     # name of the experiment
