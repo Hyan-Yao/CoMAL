@@ -39,7 +39,12 @@ cmake -B build .
 cmake --build build -j$(nproc)
 ```
 
+# Getting Start
 
+After cloning the repository and installing Flow and SUMO, run the following Linux command:
 
+```
+python examples/simulater.py [benchmark_name]
+```
 
 
