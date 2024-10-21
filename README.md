@@ -14,7 +14,6 @@ That is, we need three things: Flow, SUMO, RLlib Ray. Here we don't install the 
 We begin by creating a conda environment and installing Flow and its dependencies within the environment. This can be done by running the below script. Be sure to run the below commands from /path/to/flow.
 
 ```
-create a conda environment
 conda env create -f environment.yml
 conda activate flow
 python setup.py develop
