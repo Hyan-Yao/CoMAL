@@ -60,10 +60,8 @@ If you find our paper and codes useful, please kindly cite us via:
       author={Huaiyuan Yao and Longchao Da and Vishnu Nandam and Justin Turnau and Zhiwei Liu and Linsey Pang and Hua Wei},
       year={2024},
       eprint={2410.14368},
-```
       archivePrefix={arXiv},
       primaryClass={cs.AI},
       url={https://arxiv.org/abs/2410.14368}, 
 }
 ```
-
