@@ -10,11 +10,11 @@ The overall workflow includes a Collaboration Module that encourages autonomous 
 
 ![image](pipeline.png)
 
-# Installation Guide
+# Getting Started
 In this section we install Flow as well as the binaries and packages needed to support the traffic simulator used in modeling the dynamics of traffic networks: SUMO. 
 That is, we need three things: Flow, SUMO, RLlib Ray. Here we don't install the specific version of the benchmark because it's too old and exists lots of bugs. We utilize the latest version of both.
 
-## Install Flow
+## 1. Install Flow
 We begin by creating a conda environment and installing Flow and its dependencies within the environment. This can be done by running the below script. Be sure to run the below commands from /path/to/flow.
 
 ```
@@ -30,7 +30,7 @@ install flow within the environment
 pip install -e .
 ```
 
-## Install SUMO
+## 2. Install SUMO
 SUMO is a traffic simulator. To be able to run SUMO on Linux, just follow these steps:
 1. Install all of the required tools and libraries
 2. Get the source code
@@ -44,7 +44,7 @@ cmake -B build .
 cmake --build build -j$(nproc)
 ```
 
-# Getting Start
+## 3. Run CoMAL
 
 After cloning the repository and installing Flow and SUMO, run the following Linux command:
 
