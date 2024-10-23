@@ -1,4 +1,4 @@
-# CoMAL: Collaboration Collaborative Multi-Agent Large Language Models for Mixed-Autonomy Traffic 
+# CoMAL: Collaborative Multi-Agent Large Language Models for Mixed-Autonomy Traffic 
 
 [![Custom badge](https://img.shields.io/badge/Paper-Arxiv-b31b1b?logo=arxiv&logoColor=white?style=flat-square)](https://arxiv.org/abs/2410.14368)
 [![GitHub issues](https://img.shields.io/github/issues/PJLab-ADG/DiLu?style=flat-square)](https://github.com/Hyan-Yao/CoMAL/issues)
