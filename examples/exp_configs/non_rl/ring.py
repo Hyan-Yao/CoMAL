@@ -18,7 +18,7 @@ vehicles.add(
     num_vehicles=21)
 vehicles.add(
     veh_id="llm",
-    acceleration_controller=(LLMController, {map : "ring"}),
+    acceleration_controller=(LLMController, {"map" : "ring"}),
     routing_controller=(ContinuousRouter, {}),
     num_vehicles=1,
     color='red')
