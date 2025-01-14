@@ -9,8 +9,7 @@ from pprint import pprint
 from flow.controllers.base_controller import BaseController
 from flow.controllers.PID import IncrementalPID
 
-os.environ["http_proxy"] = "http://localhost:7890"
-os.environ["https_proxy"] = "http://localhost:7890"
+
 os.environ["OPENAI_API_KEY"] = ""
 Flow_API = None
 
@@ -139,7 +138,7 @@ class LLMController(BaseController):
         self.s0 = s0
 
         self.DA = DriverAgent(veh_id)
-        self.map_name = 'merge'
+        self.map_name = 'figureeight'
 
         self.cool_down_time = 4 # ring 10, merge 4
         self.cd_counter = 0
