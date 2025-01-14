@@ -33,10 +33,6 @@ additional_net_params["merge_lanes"] = 1
 additional_net_params["highway_lanes"] = 1
 additional_net_params["pre_merge_length"] = 500
 
-# IDM: 6.41 / 3.10
-# Merge-: 7.39 / 2.91
-# Merge-+: 7.85 / 2.95
-
 # RL vehicles constitute 5% of the total number of vehicles
 vehicles = VehicleParams()
 vehicles.add(
@@ -48,7 +44,7 @@ vehicles.add(
     num_vehicles=5)
 vehicles.add(
     veh_id="llm",
-    acceleration_controller=(LLMController, {}),
+    acceleration_controller=(LLMController, {map : "merge"}),
     car_following_params=SumoCarFollowingParams(
         speed_mode=9,
     ),
