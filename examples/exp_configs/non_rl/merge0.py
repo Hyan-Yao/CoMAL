@@ -44,7 +44,7 @@ vehicles.add(
     num_vehicles=5)
 vehicles.add(
     veh_id="llm",
-    acceleration_controller=(LLMController, {map : "merge"}),
+    acceleration_controller=(LLMController, {"map" : "merge"}),
     car_following_params=SumoCarFollowingParams(
         speed_mode=9,
     ),
