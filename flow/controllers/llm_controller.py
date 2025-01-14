@@ -128,7 +128,7 @@ class DriverAgent():
 
 
 class LLMController(BaseController):
-    def __init__(self, veh_id, v0=30, T=1, a=1, b=1.5, delta=4, s0=2, time_delay=0.0, noise=0, fail_safe=None, display_warnings=True, car_following_params=None):
+    def __init__(self, veh_id, map='figureeight', v0=30, T=1, a=1, b=1.5, delta=4, s0=2, time_delay=0.0, noise=0, fail_safe=None, display_warnings=True, car_following_params=None):
         BaseController.__init__(self, veh_id, car_following_params, delay=time_delay, fail_safe=fail_safe, noise=noise, display_warnings=display_warnings)
         self.v0 = v0
         self.T = T
@@ -138,9 +138,11 @@ class LLMController(BaseController):
         self.s0 = s0
 
         self.DA = DriverAgent(veh_id)
-        self.map_name = 'figureeight'
+        self.map_name = map
 
         self.cool_down_time = 4 # ring 10, merge 4
+        if self.map_name == 'ring':
+            self.cool_down_time = 10
         self.cd_counter = 0
         self.vel_track = []
 
